@@ -10,12 +10,31 @@ export default function LoginPage() {
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
 
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault()
-    const { error } = await supabase.auth.signInWithPassword({ email, password })
-    if (error) setError(error.message)
-    else router.push('/dashboard')
+const handleLogin = async (e: React.FormEvent) => {
+  e.preventDefault()
+
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email,
+    password
+  })
+
+  if (error) {
+    setError(error.message)
+    return
   }
+
+  const { session } = data
+  if (session) {
+    await supabase.auth.setSession({
+      access_token: session.access_token,
+      refresh_token: session.refresh_token,
+    })
+  }
+
+  console.log("Login başarılı")
+  // Tam sayfa yönlendirme (router.push yerine bu çalışır)
+  window.location.href = '/dashboard'
+}
 
   return (
     <form onSubmit={handleLogin}>
