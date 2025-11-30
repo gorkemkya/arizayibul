@@ -1,14 +1,19 @@
 // app/dashboard/page.tsx
+import { supabaseServer } from '@/lib/supabase/server';
 
-'use client'
+export default async function DashboardPage() {
+  const supabase = supabaseServer();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
-import React from 'react'
-
-export default function DashboardPage() {
   return (
-    <div className="p-8">
-      <h1 className="text-3xl font-bold mb-4">Dashboard</h1>
-      <p>Giriş başarılı! Dashboard'a hoş geldiniz.</p>
+    <div className="p-4">
+      {user ? (
+        <h1>Hoş geldin, {user.email}!</h1>
+      ) : (
+        <p>Kullanıcı bulunamadı.</p>
+      )}
     </div>
-  )
+  );
 }
